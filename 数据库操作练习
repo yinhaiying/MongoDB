@@ -1,0 +1,44 @@
+
+17、向number中插入2000条数据
+for(var i = 0;i < 2000;i++){
+  db.numbers.insert({num:i});
+}
+花费时间为7s
+但是这种方法插入了2000次，非常消耗性能，非常慢。我们可以只让它插入一次
+
+var arr = [];
+for(var i = 0;i < 2000;i++){
+  arr.push({name:i})
+}
+db.numbers.insert(arr)
+花费时间为0.1s
+
+PS:数据库的方法调用越少越好，我们尽可能将其他操作都通过js完成，最后再调用数据库方法
+
+18：查询numbers中num大于500的文档
+db.numbers.find({num:{$gt:500}})
+
+19：查询numbers中num大于4小于10的文档
+db.numbers.find({num:{$gt:4,$lt:10}})
+
+20：查看numbers中的前10条数据
+
+db.number.find():显示所有的数据,在开发是绝对不会执行不带条件的查询
+limit函数限制显示的数据的上限
+db.numbers.find().limit(10)
+  --常见的分页操作就是利用这个
+
+21：查看numbers中的第11条到21条数据
+
+    分页：每页显示10条
+    1  1-10
+    2   11-20
+    3   21-30
+
+  skip()用于跳过指定数量的数据
+db.numbers.find().skip(10).limit(10)
+
+21：查看numbers中的第21条到30条数据
+db.numbers.find().skip(20).limit(10)
+
+db.numbers.find((页码-1)*每页显示的条数).skip(20).limit(每页显示的条数)

@@ -1,0 +1,120 @@
+
+
+1 mongoose的好处：
+  --可以为文档创建一个模式结构(Schema)
+    所谓模式结构就是约束，验证。由于mongodb是非关系型数据库，对数据的约束较小。
+    可能传入一些不符合结构的数据，比如需要四个属性。但是我们只传入一个属性。
+    而mongoose则可以提供这些约束。比如这个字段需要的是number类型，而传入的
+    却是string.这些错误都需要避免。
+
+2 mongoose中提供了几个新的对象：
+  --Schema(模式对象)
+    -Schema对象定义约束了数据库中的文档结构。比如规定文档中有几个字段，字段是什么类型
+    哪个字段是必须的，哪个字段是可选的。
+  --Model
+    -Model对象作为集合中的所有文档的表示，相当于MongoDB数据库中的集合collection
+  --Document
+    -Document表示集合中的具体文档，相当于集合中的一个具体的文档。
+
+3 mongoose的使用
+  --下载安装mongoose npm i mongoose --save
+  --引入mongoose
+    var mongoose = require('mongoose')
+  --连接mongodb数据库
+  const mongoose = require('mongoose');
+  mongoose.connect('mongodb://localhost/test');
+  mongoose.connect('mongodb://数据库的ip地址/数据库名');
+    --如果端口号是默认端口号(27017),则可以省略
+
+    --监听mongoDB数据库的连接状态
+     --在mongoose对象中，有一个属性connection，该对象表示的就是数据库的连接
+       通过监视该对象的状态，可以用来监听数据库的连接与状态
+
+     mongoose.connection.once('open',function(){})
+
+     监听数据库的断开事件
+     mongoose.connection.once('close',function(){})
+
+     断开数据库的连接
+     mongoose.disconnect()
+
+
+4 mongoose操作数据库
+  --mongoose操作数据库主要通过三个对象
+    Schema:用来约束Model
+    Model:是数据库中的集合，只有通过Model才能操作数据库
+
+  创建Schema约束对象
+
+      var Schema = mongoose.Schema;
+
+      //创建模式对象
+      var stuSchema = new Schema({
+        //数据库约束
+        name:String,
+        age:Number,
+        gender:{
+          type:String,
+          default:"female"
+        },
+        address:String
+      });
+  创建Model:
+  var StuModel = mongoose.model('students',stuSchema)
+
+  操作文档：
+  使用Model对象所具有的的方法操作文档
+  增：
+  Model.create(docs,[callback])
+    --用来创建一个文档，并且添加到数据库中
+    --参数：
+      doc(s):可以是一个文档对象，也可以是一个文档对象的数组
+      callback:回调函数的参数.两个参数，错误对象和docs对象
+
+  查询：
+  Model.find(condition,[projection],[options],[callback])
+    --查询所有复合条件的文档
+    --总是返回一个数组
+  Model.findById()
+    --根据文档的id属性查询文档
+  Model.findOne()
+    --查询复合条件的第一个文档
+    --总会返回一个具体的文档对象，不是数组
+  参数：
+    condition:查询条件
+    projections:投影。是否显示所有的字段.两种方式：
+      {name:1,age:0}
+      'name -age'
+
+    options:查询选项(skip,limit)
+    callback:回调函数。查询结果会通过回调函数返回。这里必须传
+
+  修改：
+  Model.update(conditions,doc,[options],callback)
+  Model.updateOne()
+  Model.updateMany()
+  Model.replaceOne()
+    --用来修改文档
+    --conditions:查询条件
+    --docs修改后的对象
+    --options:配置参数
+    --callback:回调参数
+
+  删除：
+  Model.remove()
+  Model.deleteOne()
+  Model.deleteMany()
+
+  获取文档数量
+  Model.count()
+
+  Document的方法
+  var stu = new Model({
+    name:'',
+    age:25
+  });
+  这里创建的文档还没有插入数据库
+  增
+  stu.save()
+  修改：
+  stu.update()
